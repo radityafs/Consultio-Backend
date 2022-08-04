@@ -1,20 +1,26 @@
 const { body } = require('express-validator');
 
 const registerValidation = () => [
-  body('name').isLength({ min: 3, max: 16 }).withMessage('invalid name'),
+  body('fullname')
+    .isLength({ min: 8, max: 128 })
+    .withMessage('invalid fullname'),
   body('email').isEmail().withMessage('invalid email'),
-  body('password').isLength({ min: 8, max: 16 }).withMessage('invalid password')
+  body('password')
+    .isLength({ min: 8, max: 16 })
+    .withMessage('Please enter a valid password')
 ];
 
 const loginValidation = () => [
-  body('email').isEmail().withMessage('invalid email'),
-  body('password').isLength({ min: 8, max: 16 }).withMessage('invalid password')
+  body('email').isEmail().withMessage('Please enter a valid email'),
+  body('password')
+    .isLength({ min: 8, max: 16 })
+    .withMessage('Please enter a valid password')
 ];
 
 const generateTokenValidation = () => [
   body('refreshToken')
-    .isLength({ min: 5 })
-    .withMessage('refresh token is required')
+    .isLength({ min: 8, max: 128 })
+    .withMessage('invalid refresh token')
 ];
 
 module.exports = {

@@ -6,7 +6,7 @@ module.exports = {
   DB_HOST: process.env.MYSQL_HOST || 'localhost',
   DB_USER: process.env.MYSQL_USER || 'root',
   DB_PASS: process.env.MYSQL_PASS || '',
-  DB_NAME: process.env.MYSQL_DB || '',
+  DB_NAME: process.env.MYSQL_DB || 'consultio',
 
   JWT_SECRET: process.env.JWT_SECRET || 'secret',
   JWT_EXPIRES: process.env.JWT_EXPIRES || '1h',
