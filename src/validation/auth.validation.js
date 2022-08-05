@@ -19,7 +19,7 @@ const loginValidation = () => [
 
 const generateTokenValidation = () => [
   body('refreshToken')
-    .isLength({ min: 8, max: 128 })
+    .isLength({ min: 128, max: 255 })
     .withMessage('invalid refresh token')
 ];
 

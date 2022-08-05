@@ -19,7 +19,8 @@ module.exports = {
       phone: '',
       roleId: 2,
       isVerified: false,
-      isPrivate: false
+      isPrivate: false,
+      token
     };
 
     const query = `INSERT INTO users (userId, fullname,email, password, token, photo, roleId) 

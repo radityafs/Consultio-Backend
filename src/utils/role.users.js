@@ -1,18 +1,18 @@
 const role = (roleId) => {
   if (roleId === 1) {
-    return 'admin';
+    return 'ADMIN';
   }
   if (roleId === 2) {
-    return 'user';
+    return 'USER';
   }
   if (roleId === 3) {
-    return 'law-consultant';
+    return 'LAWYER';
   }
   if (roleId === 4) {
-    return 'health-consultant';
+    return 'PSYCHOLOGIST';
   }
 
-  return 'user';
+  return 'USER';
 };
 
 module.exports = role;

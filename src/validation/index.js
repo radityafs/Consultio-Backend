@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const { failed } = require('../helpers/response');
 const { registerValidation } = require('./auth.validation');
+const { updateProfileValidation } = require('./profile.validation');
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -16,5 +17,6 @@ const validate = (req, res, next) => {
 
 module.exports = {
   validate,
-  registerValidation
+  registerValidation,
+  updateProfileValidation
 };

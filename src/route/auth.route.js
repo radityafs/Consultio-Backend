@@ -10,10 +10,11 @@ const {
 
 const {
   loginValidation,
-  generateTokenValidation
+  generateTokenValidation,
+  registerValidation
 } = require('../validation/auth.validation');
 
-const { validate, registerValidation } = require('../validation/index');
+const { validate } = require('../validation/index');
 
 router
   .post('/register', registerValidation(), validate, register)

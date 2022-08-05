@@ -4,15 +4,20 @@ const { failed } = require('../helpers/response');
 
 const AuthJwt = (req, res, next) => {
   try {
-    const { token } = req.headers;
-    if (!token) {
+    const { authorization } = req.headers;
+
+    console.log(req.headers);
+
+    if (!authorization) {
       return failed(res, 401, 'Access denied, no token provided');
     }
 
-    const verify = verifyToken(token);
+    const verify = verifyToken(authorization);
     if (!verify) {
       failed(res, 401, 'Unauthorized access, invalid token');
     }
+
+    req.userData = verify.data;
 
     next();
   } catch (err) {

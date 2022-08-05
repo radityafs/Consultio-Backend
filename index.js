@@ -2,11 +2,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const xss = require('xss-clean');
 const cors = require('cors');
+const helmet = require('helmet');
 
 const { PORT } = require('./env');
 const authRoute = require('./src/route/auth.route');
 
 const app = express();
+
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false
+  })
+);
+
 app.use(
   cors({
     origin: '*'

@@ -4,18 +4,18 @@ const { failed } = require('../helpers/response');
 
 const AuthJwt = (req, res, next) => {
   try {
-    const { Authorization } = req.headers;
-    if (!Authorization) {
+    const { authorization } = req.headers;
+    if (!authorization) {
       return failed(res, 401, 'Access denied, no token provided');
     }
 
-    const verify = verifyToken(Authorization);
+    const verify = verifyToken(authorization);
 
     if (!verify) {
       failed(res, 401, 'Unauthorized access, invalid token');
     }
 
-    if (verify.role !== 'admin') {
+    if (verify.role !== 'ADMIN') {
       return failed(res, 401, 'Access denied, you are not an admin');
     }
 

@@ -8,9 +8,10 @@ const {
   createRefreshToken,
   generateRefreshToken
 } = require('../helpers/jwt');
+const { sendMailVerification } = require('../helpers/emailService');
 
 module.exports = {
-  register: (req, res) => {
+  register: async (req, res) => {
     try {
       const { fullname, email, password } = req.body;
       const user = {
@@ -22,91 +23,98 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10);
       user.password = bcrypt.hashSync(password, salt);
 
-      register(user)
-        .then((result) => {
-          const payload = {
-            userId: result.userId,
-            role: role(result.roleId),
-            fullname: result.fullname,
-            email: result.email,
-            photo: result.photo,
-            address: result.address,
-            city: result.city,
-            phone: result.phone,
-            isVerified: result.isVerified,
-            isPrivate: result.isPrivate
-          };
+      const result = await register(user);
+      if (result.affectedRows > 0) {
+        const payload = {
+          userId: result.userId,
+          role: role(result.roleId),
+          fullname: result.fullname,
+          email: result.email,
+          photo: result.photo,
+          address: result.address,
+          city: result.city,
+          phone: result.phone,
+          isVerified: result.isVerified,
+          isPrivate: result.isPrivate
+        };
 
-          const token = createToken(payload);
-          const refreshToken = createRefreshToken(payload);
+        const token = createToken(user);
+        const refreshToken = createRefreshToken(user);
 
-          const data = {
-            token,
-            refreshToken,
-            profile: payload
-          };
+        // send email verification
+        await sendMailVerification(user.email, result.token);
 
-          success(res, 201, data);
-        })
-        .catch((err) => {
-          if (err.code === 'ER_DUP_ENTRY') {
-            failed(res, 500, 'Email already exists');
-            return;
-          }
-
-          failed(res, 500, err.message);
+        return success(res, 201, {
+          token,
+          refreshToken,
+          profile: payload
         });
-    } catch (error) {
-      failed(res, 500, error.message);
-    }
-  },
-  login: (req, res) => {
-    const { email, password } = req.body;
-    const user = {
-      email,
-      password
-    };
-
-    login(user).then((data) => {
-      if (data.length > 0) {
-        const compare = bcrypt.compareSync(password, data[0].password);
-
-        if (compare) {
-          const payload = {
-            userId: data[0].userId,
-            role: role(data[0].roleId),
-            fullname: data[0].fullname,
-            email: data[0].email,
-            photo: data[0].photo,
-            address: data[0].address,
-            city: data[0].city,
-            phone: data[0].phone,
-            isVerified: data[0].isVerified,
-            isPrivate: data[0].isPrivate
-          };
-
-          return success(res, 200, {
-            token: createToken(payload),
-            refreshToken: createRefreshToken(payload),
-            profile: payload
-          });
-        }
-
-        return failed(res, 401, 'Wrong email or password');
       }
-      return failed(res, 401, 'Wrong email or password');
-    });
-  },
-  generateToken: (req, res) => {
-    const { refreshToken } = req.body;
 
-    const Token = generateRefreshToken(refreshToken);
-    if (!Token) {
-      return failed(res, 401, 'Unauthorized');
+      return failed(res, 400, 'Email already registered');
+    } catch (e) {
+      if (e.code === 'ER_DUP_ENTRY') {
+        return failed(res, 400, 'Email already registered');
+      }
+
+      return failed(res, 500, {
+        message: e.message
+      });
     }
+  },
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
 
-    return success(res, 200, {
-      token: Token
-    });
+      const result = await login({ email, password });
+
+      if (result.length > 0) {
+        const payload = {
+          userId: result[0].userId,
+          role: role(result[0].roleId),
+          fullname: result[0].fullname,
+          email: result[0].email,
+          photo: result[0].photo,
+          address: result[0].address,
+          city: result[0].city,
+          phone: result[0].phone,
+          isVerified: result[0].isVerified,
+          isPrivate: result[0].isPrivate
+        };
+
+        const token = createToken(payload);
+        const refreshToken = createRefreshToken(payload);
+        return success(res, 200, {
+          token,
+          refreshToken,
+          profile: payload
+        });
+      }
+
+      return failed(res, 400, 'Email or password is incorrect');
+    } catch (e) {
+      return failed(res, 500, {
+        message: e.message
+      });
+    }
+  },
+  generateToken: async (req, res) => {
+    try {
+      const { refreshToken } = req.body;
+
+      const Token = generateRefreshToken(refreshToken);
+
+      if (!Token) {
+        return failed(res, 401, 'Unauthorized');
+      }
+
+      return success(res, 200, {
+        token: Token
+      });
+    } catch (error) {
+      return failed(res, 500, {
+        message: error.message
+      });
+    }
   }
 };
