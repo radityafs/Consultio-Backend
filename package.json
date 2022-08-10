@@ -7,7 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "start-dev": "nodemon index.js",
-    "lint": "eslint --ext .js,.json src"
+    "lint": "eslint --ext .js,.json src",
+    "migrate":"npx sequelize-cli db:migrate",
+    "migrate:undo":"npx sequelize-cli db:migrate:undo:all",
+    "seeder":"npx sequelize-cli db:seed:all",
+    "seeder:undo":"npx sequelize-cli db:seed:undo:all"
   },
   "author": "",
   "license": "ISC",
