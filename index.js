@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const { PORT } = require('./env');
+
 const usersRoute = require('./src/route/users.route');
 const authRoute = require('./src/route/auth.route');
 const postRoute = require('./src/route/post.route');
@@ -20,6 +21,8 @@ app.use(
     crossOriginResourcePolicy: false
   })
 );
+
+app.use('/public', express.static('public'));
 
 app.use(
   cors({
