@@ -5,7 +5,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const { PORT } = require('./env');
+const usersRoute = require('./src/route/users.route');
 const authRoute = require('./src/route/auth.route');
+const postRoute = require('./src/route/post.route');
+const consultantRoute = require('./src/route/consultant.route');
+const likeRoute = require('./src/route/like.route');
+const commentRoute = require('./src/route/comment.route');
 
 const app = express();
 
@@ -29,6 +34,11 @@ app.get('/', (req, res) => {
 });
 
 app.use(authRoute);
+app.use(usersRoute);
+app.use(postRoute);
+app.use(consultantRoute);
+app.use(likeRoute);
+app.use(commentRoute);
 
 app.use((req, res) => {
   res.status(404).json({

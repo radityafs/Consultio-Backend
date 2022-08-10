@@ -7,25 +7,13 @@ const {
   JWT_REFRESH_EXPIRES
 } = require('../../env');
 
-const createToken = (user) => {
-  const payload = {
-    id: user.id,
-    email: user.email,
-    name: user.name
-  };
-
+const createToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES
   });
 };
 
-const createRefreshToken = (user) => {
-  const payload = {
-    id: user.id,
-    email: user.email,
-    name: user.name
-  };
-
+const createRefreshToken = (payload) => {
   return jwt.sign(payload, JWT_REFRESH_SECRET, {
     expiresIn: JWT_REFRESH_EXPIRES
   });
@@ -36,7 +24,7 @@ const verifyToken = (token) => {
   if (!verify) {
     return false;
   }
-  return true;
+  return verify;
 };
 
 const generateRefreshToken = (token) => {
@@ -45,7 +33,9 @@ const generateRefreshToken = (token) => {
     return false;
   }
 
-  return createToken({ id: verify.id, email: verify.email, name: verify.name });
+  delete verify.exp;
+
+  return createToken(verify);
 };
 
 module.exports = {

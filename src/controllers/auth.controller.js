@@ -1,7 +1,11 @@
 const bcrypt = require('bcrypt');
 const role = require('../utils/role.users');
 
-const { register, login } = require('../models/auth.model');
+const {
+  login,
+  registerUser,
+  registerConsultant
+} = require('../models/auth.model');
 const { success, failed } = require('../helpers/response');
 const {
   createToken,
@@ -11,9 +15,10 @@ const {
 const { sendMailVerification } = require('../helpers/emailService');
 
 module.exports = {
-  register: async (req, res) => {
+  registerUser: async (req, res) => {
     try {
       const { fullname, email, password } = req.body;
+
       const user = {
         fullname,
         email,
@@ -23,26 +28,25 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10);
       user.password = bcrypt.hashSync(password, salt);
 
-      const result = await register(user);
-      if (result.affectedRows > 0) {
+      const result = await registerUser(user);
+      if (result.result.affectedRows > 0) {
         const payload = {
-          userId: result.userId,
-          role: role(result.roleId),
-          fullname: result.fullname,
-          email: result.email,
-          photo: result.photo,
-          address: result.address,
-          city: result.city,
-          phone: result.phone,
-          isVerified: result.isVerified,
-          isPrivate: result.isPrivate
+          userId: result.data.userId,
+          role: role(result.data.role),
+          fullname: result.data.fullname,
+          email: result.data.email,
+          photo: result.data.photo,
+          address: result.data.address,
+          city: result.data.city,
+          phone: result.data.phone,
+          isVerified: result.data.isVerified,
+          isPrivate: result.data.isPrivate
         };
 
         const token = createToken(user);
         const refreshToken = createRefreshToken(user);
 
-        // send email verification
-        await sendMailVerification(user.email, result.token);
+        // await sendMailVerification(user.email, result.data.token);
 
         return success(res, 201, {
           token,
@@ -59,6 +63,51 @@ module.exports = {
 
       return failed(res, 500, {
         message: e.message
+      });
+    }
+  },
+
+  registerConsultant: async (req, res) => {
+    try {
+      const { fullname, email, password, roleId } = req.body;
+
+      const user = {
+        fullname,
+        email,
+        password,
+        roleId
+      };
+
+      const salt = bcrypt.genSaltSync(10);
+      user.password = bcrypt.hashSync(password, salt);
+
+      const result = await registerConsultant(user);
+      if (result.result.affectedRows > 0) {
+        const payload = {
+          role: role(result.data.roleId),
+          ...result.data
+        };
+
+        const token = createToken(user);
+        const refreshToken = createRefreshToken(user);
+
+        // await sendMailVerification(user.email, result.data.token);
+
+        return success(res, 201, {
+          token,
+          refreshToken,
+          profile: payload
+        });
+      }
+
+      return failed(res, 400, 'Email already registered');
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        return failed(res, 400, 'Email already registered');
+      }
+
+      return failed(res, 500, {
+        message: error.message
       });
     }
   },
@@ -81,7 +130,6 @@ module.exports = {
           isVerified: result[0].isVerified,
           isPrivate: result[0].isPrivate
         };
-
         const token = createToken(payload);
         const refreshToken = createRefreshToken(payload);
         return success(res, 200, {

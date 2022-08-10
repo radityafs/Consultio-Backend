@@ -1,5 +1,11 @@
+const fs = require('fs');
 const { success, failed } = require('../helpers/response');
-const { updateProfile } = require('../models/profile.model');
+const {
+  updateProfile,
+  getProfile,
+  updatePhotoProfile
+} = require('../models/users.model');
+const role = require('../utils/role.users');
 
 module.exports = {
   updateProfile: async (req, res) => {
@@ -27,13 +33,44 @@ module.exports = {
       });
     }
   },
+
+  getProfile: async (req, res) => {
+    try {
+      const { userId } = req.userData;
+
+      const result = await getProfile({ userId });
+
+      if (result.length > 0) {
+        delete result[0].password;
+        delete result[0].token;
+        result[0].role = role(result[0].role);
+
+        delete result[0].roleId;
+
+        return success(res, 200, {
+          profile: result[0]
+        });
+      }
+
+      return failed(res, 400, 'Failed to get profile');
+    } catch (error) {
+      return failed(res, 500, {
+        message: error.message
+      });
+    }
+  },
   updatePhotoProfile: async (req, res) => {
     try {
-      const { photo } = req.body;
+      const profile = await getProfile({ userId: req.userData.userId });
+      const { photo } = profile[0];
 
-      const result = await updateProfile({
+      if (photo !== 'default.png') {
+        fs.unlinkSync(`./public/${photo}`);
+      }
+
+      const result = await updatePhotoProfile({
         userId: req.userData.userId,
-        photo
+        photo: req.file.filename
       });
 
       if (result.affectedRows > 0) {

@@ -11,7 +11,7 @@ module.exports = {
       const { email, userId } = req.userData;
       const result = await getTokenVerification({ userId });
 
-      if (result.affectedRows > 0) {
+      if (result.length > 0) {
         await sendMailVerification(email, result[0].token);
 
         return success(res, 200, {
@@ -28,7 +28,7 @@ module.exports = {
   },
   verifyEmail: async (req, res) => {
     try {
-      const { token } = req.params;
+      const { token } = req.body;
       const { userId } = req.userData;
 
       const result = await updateEmailVerification({ token, userId });

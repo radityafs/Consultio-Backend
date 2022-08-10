@@ -19,7 +19,7 @@ const AuthJwt = (req, res, next) => {
       return failed(res, 401, 'Access denied, you are not an admin');
     }
 
-    req.user = verify.data;
+    req.userData = verify;
 
     next();
   } catch (err) {

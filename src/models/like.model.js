@@ -1,13 +1,12 @@
 const { db } = require('../config');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
-  updateProfile: async (data) => {
-    const { userId, fullname, city, address, phone } = data;
+  postLike: async (data) => {
+    const { postId, userId } = data;
+    const likeId = uuidv4();
 
-    const query = `
-        UPDATE users SET fullname = '${fullname}', city = '${city}', address = '${address}', phone = '${phone}'
-        WHERE userId = '${userId}';
-    `;
+    const query = `INSERT INTO likes (likeId, postId, userId) VALUES ('${likeId}','${postId}', '${userId}');`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
@@ -19,13 +18,10 @@ module.exports = {
       });
     });
   },
-  updatePhotoProfile: async (data) => {
-    const { userId, photo } = data;
+  destroyLike: async (data) => {
+    const { postId, userId } = data;
 
-    const query = `
-        UPDATE users SET photo = '${photo}'
-        WHERE userId = '${userId}';
-    `;
+    const query = `DELETE FROM likes WHERE postId = '${postId}' AND userId = '${userId}';`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
