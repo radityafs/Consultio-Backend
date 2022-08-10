@@ -15,6 +15,6 @@ module.exports = {
 
   EMAIL_HOST: process.env.EMAIL_HOST || 'smtp.gmail.com',
   EMAIL_PORT: process.env.EMAIL_PORT || 465,
-  EMAIL_USER: process.env.EMAIL_USER || 'radityafiqa4@gmail.com',
-  EMAIL_PASS: process.env.EMAIL_PASS || 'tcsupnfbrmrqwinq'
+  EMAIL_USER: process.env.EMAIL_USER || '',
+  EMAIL_PASS: process.env.EMAIL_PASS || ''
 };
