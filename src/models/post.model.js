@@ -3,6 +3,21 @@ const { v4: uuidv4 } = require('uuid');
 const { db } = require('../config');
 
 module.exports = {
+  isPostAvailable: async (data) => {
+    const { postId } = data;
+
+    const query = `SELECT * FROM posts WHERE postId = '${postId}';`;
+
+    return new Promise((resolve, reject) => {
+      db.query(query, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  },
   getCountAllPost: async (data) => {
     const { search, user } = data;
 

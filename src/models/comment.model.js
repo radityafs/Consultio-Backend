@@ -21,7 +21,9 @@ module.exports = {
   getCommentByPostId: async (data) => {
     const { postId, offset, limit } = data;
 
-    const query = `SELECT users.userId, users.fullname, users.photo, comments.message, comments.createdAt FROM comments LEFT JOIN users ON comments.userId = users.userId WHERE postId = '${postId}' ORDER BY createdAt DESC LIMIT ${limit} OFFSET ${offset};`;
+    const query = `SELECT users.userId, users.fullname, users.photo, comments.message, comments.createdAt
+    FROM comments LEFT JOIN users ON comments.userId = users.userId WHERE postId = '${postId}'
+    ORDER BY createdAt DESC LIMIT ${limit} OFFSET ${offset};`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {

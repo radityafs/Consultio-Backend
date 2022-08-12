@@ -1,11 +1,18 @@
 const { success, failed } = require('../helpers/response');
 const { postLike, destroyLike } = require('../models/like.model');
+const { isPostAvalailable } = require('../models/post.model');
 
 module.exports = {
   postLike: async (req, res) => {
     try {
       const { id } = req.params;
       const { userId } = req.userData;
+
+      const isAvailablePost = await isPostAvalailable({ postId: id });
+
+      if (!isAvailablePost) {
+        return failed(res, 404, 'PostId not found');
+      }
 
       const like = await postLike({
         userId,

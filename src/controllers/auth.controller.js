@@ -43,8 +43,8 @@ module.exports = {
           isPrivate: result.data.isPrivate
         };
 
-        const token = createToken(user);
-        const refreshToken = createRefreshToken(user);
+        const token = createToken(payload);
+        const refreshToken = createRefreshToken(payload);
 
         // await sendMailVerification(user.email, result.data.token);
 
@@ -84,12 +84,20 @@ module.exports = {
       const result = await registerConsultant(user);
       if (result.result.affectedRows > 0) {
         const payload = {
-          role: role(result.data.roleId),
-          ...result.data
+          userId: result.data.userId,
+          role: role(result.data.role),
+          fullname: result.data.fullname,
+          email: result.data.email,
+          photo: result.data.photo,
+          address: result.data.address,
+          city: result.data.city,
+          phone: result.data.phone,
+          isVerified: result.data.isVerified,
+          isPrivate: result.data.isPrivate
         };
 
-        const token = createToken(user);
-        const refreshToken = createRefreshToken(user);
+        const token = createToken(payload);
+        const refreshToken = createRefreshToken(payload);
 
         // await sendMailVerification(user.email, result.data.token);
 

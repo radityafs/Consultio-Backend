@@ -1,6 +1,38 @@
 const { db } = require('../config');
 
 module.exports = {
+  isAvalaibleConsultant: async (data) => {
+    const { consultantId } = data;
+
+    const query = `SELECT * FROM consultants WHERE consultantId = '${consultantId}';`;
+
+    return new Promise((resolve, reject) => {
+      db.query(query, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  },
+
+  getConsultantByUserId: async (data) => {
+    const { userId } = data;
+
+    const query = `SELECT * FROM consultants WHERE userId = '${userId}';`;
+
+    return new Promise((resolve, reject) => {
+      db.query(query, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  },
+
   getConsultantList: (data) => {
     const { roleid, city, name } = data;
 

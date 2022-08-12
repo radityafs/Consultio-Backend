@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const xss = require('xss-clean');
 const cors = require('cors');
 const helmet = require('helmet');
+const socketio = require('socket.io');
+const http = require('http');
 
 const { PORT } = require('./env');
 
@@ -12,8 +14,18 @@ const postRoute = require('./src/route/post.route');
 const consultantRoute = require('./src/route/consultant.route');
 const likeRoute = require('./src/route/like.route');
 const commentRoute = require('./src/route/comment.route');
+const bookingRoute = require('./src/route/booking.route');
+
+const socketController = require('./src/socket/index');
 
 const app = express();
+const server = http.createServer(app);
+
+const io = socketio(server, {
+  cors: {
+    origin: '*'
+  }
+});
 
 app.use(
   helmet({
@@ -29,12 +41,9 @@ app.use(
     origin: '*'
   })
 );
+
 app.use(bodyParser.json());
 app.use(xss());
-
-app.get('/', (req, res) => {
-  res.send('Welcome to API');
-});
 
 app.use(authRoute);
 app.use(usersRoute);
@@ -42,6 +51,11 @@ app.use(postRoute);
 app.use(consultantRoute);
 app.use(likeRoute);
 app.use(commentRoute);
+app.use(bookingRoute);
+
+io.on('connection', (socket) => {
+  socketController(io, socket);
+});
 
 app.use((req, res) => {
   res.status(404).json({
@@ -50,4 +64,4 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => console.log(`service running on PORT ${PORT}`));
+server.listen(PORT, () => console.log(`service running on PORT ${PORT}`));

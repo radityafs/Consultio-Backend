@@ -5,6 +5,8 @@ const {
   postComment
 } = require('../models/comment.model');
 
+const { isPostAvalailable } = require('../models/post.model');
+
 module.exports = {
   getComment: async (req, res) => {
     try {
@@ -46,6 +48,12 @@ module.exports = {
       const { id } = req.params;
       const { message } = req.body;
       const { userId } = req.userData;
+
+      const isAvailablePost = await isPostAvalailable({ postId: id });
+
+      if (!isAvailablePost) {
+        return failed(res, 404, 'PostId not found');
+      }
 
       const result = await postComment({
         userId,
