@@ -4,7 +4,7 @@ const registerValidation = () => [
   body('fullname')
     .isLength({ min: 8, max: 128 })
     .withMessage('invalid fullname'),
-  body('email').isEmail().withMessage('invalid email'),
+  body('email').isEmail().normalizeEmail().withMessage('invalid email'),
   body('password')
     .isLength({ min: 8, max: 16 })
     .withMessage('Please enter a valid password')
@@ -14,7 +14,7 @@ const registerConsultantValidation = () => [
   body('fullname')
     .isLength({ min: 8, max: 128 })
     .withMessage('invalid fullname'),
-  body('email').isEmail().withMessage('invalid email'),
+  body('email').isEmail().normalizeEmail().withMessage('invalid email'),
   body('password')
     .isLength({ min: 8, max: 16 })
     .withMessage('Please enter a valid password'),
