@@ -1,27 +1,27 @@
 module.exports = {
   async up(queryInterface) {
-    await queryInterface.bulkInsert('Roles', [
+    await queryInterface.bulkInsert("roles", [
       {
         roleId: 1,
-        name: 'ADMIN'
+        name: "ADMIN"
       },
       {
         roleId: 2,
-        name: 'USER'
+        name: "USER"
       },
       {
         roleId: 3,
-        name: 'LAW CONSULTANT'
+        name: "LAW CONSULTANT"
       },
       {
         roleId: 4,
-        name: 'HEALTH CONSULTANT'
+        name: "HEALTH CONSULTANT"
       }
     ]);
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete('roles', null, {
+    await queryInterface.bulkDelete("roles", null, {
       returning: true
     });
   }

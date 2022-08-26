@@ -1,6 +1,6 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Roles', {
+    await queryInterface.createTable("roles", {
       roleId: {
         allowNull: false,
         primaryKey: true,
@@ -14,17 +14,17 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('now')
+        defaultValue: Sequelize.fn("now")
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('now')
+        defaultValue: Sequelize.fn("now")
       }
     });
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('Roles');
+    await queryInterface.dropTable("roles");
   }
 };
