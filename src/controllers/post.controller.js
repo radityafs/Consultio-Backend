@@ -1,11 +1,11 @@
-const { success, failed } = require('../helpers/response');
+const { success, failed } = require("../helpers/response");
 
 const {
   getCountAllPost,
   getPost,
   CreatePost,
   getPostById
-} = require('../models/post.model');
+} = require("../models/post.model");
 
 module.exports = {
   getPost: async (req, res) => {
@@ -24,20 +24,20 @@ module.exports = {
       const totalPage = Math.ceil(totalData / limit);
 
       if (page > totalPage) {
-        return failed(res, 400, 'Page not found');
+        return failed(res, 400, "Page not found");
       }
 
       const result = await getPost({ offset, limit, search, user, userId });
 
       if (result.length > 0) {
         return success(res, 200, {
-          message: 'Successfully get post',
+          message: "Successfully get post",
           data: result,
           currentPage: page,
           totalPage
         });
       } else {
-        return failed(res, 404, 'Post not found');
+        return failed(res, 404, "Post not found");
       }
     } catch (error) {
       return failed(res, 500, {
@@ -48,21 +48,22 @@ module.exports = {
 
   createPost: async (req, res) => {
     try {
-      const { story } = req.body;
+      const { story, isAnonymous } = req.body;
 
       const result = await CreatePost({
         userId: req.userData.userId,
         story,
+        isAnonymous: isAnonymous || false,
         attachment: req.file?.filename || undefined
       });
 
       if (result.affectedRows > 0) {
         return success(res, 201, {
-          message: 'Successfully create post'
+          message: "Successfully create post"
         });
       }
 
-      return failed(res, 400, 'Failed to create post');
+      return failed(res, 400, "Failed to create post");
     } catch (error) {
       return failed(res, 500, {
         message: error.message
@@ -79,11 +80,11 @@ module.exports = {
 
       if (result.length > 0) {
         return success(res, 200, {
-          message: 'Successfully get post',
+          message: "Successfully get post",
           data: result
         });
       } else {
-        return failed(res, 404, 'Post not found');
+        return failed(res, 404, "Post not found");
       }
     } catch (error) {
       return failed(res, 500, {
@@ -100,11 +101,11 @@ module.exports = {
 
       if (result.affectedRows > 0) {
         return success(res, 200, {
-          message: 'Successfully delete post'
+          message: "Successfully delete post"
         });
       }
 
-      return failed(res, 400, 'Failed to delete post');
+      return failed(res, 400, "Failed to delete post");
     } catch (error) {
       return failed(res, 500, {
         message: error.message

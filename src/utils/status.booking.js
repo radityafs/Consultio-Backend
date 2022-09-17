@@ -1,14 +1,14 @@
 const status = (data) => {
-  if (data.reviewStar !== null && data.reviewContent !== null) {
-    return 'Completed';
+  if (data.rating !== null && data.review !== null) {
+    return "Completed";
   }
 
-  if (data.isActive === 0 && data.reviewStar === null) {
-    return 'Waiting for review';
+  if (data.isActive === 0 && data.rating === null) {
+    return "Waiting for review";
   }
 
   if (data.isActive === 1) {
-    return 'Active';
+    return "Active";
   }
 };
 

@@ -15,6 +15,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      isAnonymous: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       attachmentId: {
         type: Sequelize.UUID,
         allowNull: true

@@ -1,18 +1,18 @@
-const bcrypt = require('bcrypt');
-const role = require('../utils/role.users');
+const bcrypt = require("bcrypt");
+const role = require("../utils/role.users");
 
 const {
   login,
   registerUser,
   registerConsultant
-} = require('../models/auth.model');
-const { success, failed } = require('../helpers/response');
+} = require("../models/auth.model");
+const { success, failed } = require("../helpers/response");
 const {
   createToken,
   createRefreshToken,
   generateRefreshToken
-} = require('../helpers/jwt');
-const { sendMailVerification } = require('../helpers/emailService');
+} = require("../helpers/jwt");
+const { sendMailVerification } = require("../helpers/emailService");
 
 module.exports = {
   registerUser: async (req, res) => {
@@ -55,10 +55,10 @@ module.exports = {
         });
       }
 
-      return failed(res, 400, 'Email already registered');
+      return failed(res, 400, "Email already registered");
     } catch (e) {
-      if (e.code === 'ER_DUP_ENTRY') {
-        return failed(res, 400, 'Email already registered');
+      if (e.code === "ER_DUP_ENTRY") {
+        return failed(res, 400, "Email already registered");
       }
 
       return failed(res, 500, {
@@ -85,7 +85,7 @@ module.exports = {
       if (result.result.affectedRows > 0) {
         const payload = {
           userId: result.data.userId,
-          role: role(result.data.role),
+          role: role(result.data.roleId),
           fullname: result.data.fullname,
           email: result.data.email,
           photo: result.data.photo,
@@ -108,10 +108,10 @@ module.exports = {
         });
       }
 
-      return failed(res, 400, 'Email already registered');
+      return failed(res, 400, "Email already registered");
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        return failed(res, 400, 'Email already registered');
+      if (error.code === "ER_DUP_ENTRY") {
+        return failed(res, 400, "Email already registered");
       }
 
       return failed(res, 500, {
@@ -123,31 +123,37 @@ module.exports = {
     try {
       const { email, password } = req.body;
 
-      const result = await login({ email, password });
+      const result = await login({ email });
 
       if (result.length > 0) {
-        const payload = {
-          userId: result[0].userId,
-          role: role(result[0].roleId),
-          fullname: result[0].fullname,
-          email: result[0].email,
-          photo: result[0].photo,
-          address: result[0].address,
-          city: result[0].city,
-          phone: result[0].phone,
-          isVerified: result[0].isVerified,
-          isPrivate: result[0].isPrivate
-        };
-        const token = createToken(payload);
-        const refreshToken = createRefreshToken(payload);
-        return success(res, 200, {
-          token,
-          refreshToken,
-          profile: payload
-        });
+        const isMatch = bcrypt.compareSync(password, result[0].password);
+
+        if (isMatch) {
+          const payload = {
+            userId: result[0].userId,
+            role: role(result[0].roleId),
+            fullname: result[0].fullname,
+            email: result[0].email,
+            photo: result[0].photo,
+            address: result[0].address,
+            city: result[0].city,
+            phone: result[0].phone,
+            isVerified: result[0].isVerified,
+            isPrivate: result[0].isPrivate
+          };
+          const token = createToken(payload);
+          const refreshToken = createRefreshToken(payload);
+          return success(res, 200, {
+            token,
+            refreshToken,
+            profile: payload
+          });
+        }
+
+        return failed(res, 400, "Email or Password is incorrect");
       }
 
-      return failed(res, 400, 'Email or password is incorrect');
+      return failed(res, 400, "Email or password is incorrect");
     } catch (e) {
       return failed(res, 500, {
         message: e.message
@@ -161,7 +167,7 @@ module.exports = {
       const Token = generateRefreshToken(refreshToken);
 
       if (!Token) {
-        return failed(res, 401, 'Unauthorized');
+        return failed(res, 401, "Unauthorized");
       }
 
       return success(res, 200, {

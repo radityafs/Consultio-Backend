@@ -1,5 +1,5 @@
-const { db } = require('../config');
-const { v4: uuidv4 } = require('uuid');
+const { db } = require("../config");
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
   getBookingId: async (data) => {
@@ -36,7 +36,7 @@ module.exports = {
             if (error) {
               reject(error);
             } else {
-              resolve(result);
+              resolve({ result, data: { bookingId, chatId } });
             }
           });
         }
@@ -110,13 +110,13 @@ module.exports = {
 
     WHERE userId = '${userId}'
 
-    ${type || isActive ? 'AND' : ''}
+    ${type || isActive ? "AND" : ""}
 
-    ${type ? `type = '${type}'` : ''}
+    ${type ? `type = '${type}'` : ""}
 
-    ${type && isActive ? 'AND' : ''}
+    ${type && isActive ? "AND" : ""}
     
-    ${isActive ? `isActive = ${isActive}` : ''}`;
+    ${isActive ? `isActive = ${isActive}` : ""}`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
@@ -137,6 +137,9 @@ module.exports = {
     bookingId, 
     (SELECT users.fullname FROM users WHERE bookings.userId = users.userId) AS customerName,
     (SELECT users.fullname FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantName,
+    (SELECT users.photo FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantPhoto,
+    (SELECT users.userId FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantUserId,
+    consultantId,
     type,
     chatId,
     reviewStar AS rating,
@@ -150,9 +153,9 @@ module.exports = {
 
     WHERE userId = '${userId}'
 
-    ${type || isActive ? 'AND' : ''}
-    ${type ? `type = '${type}'` : ''}
-    ${isActive ? `isActive = ${isActive}` : ''}
+    ${type || isActive ? "AND" : ""}
+    ${type ? `type = '${type}'` : ""}
+    ${isActive ? `isActive = ${isActive}` : ""}
     
     ORDER BY createdAt DESC
     LIMIT ${limit}

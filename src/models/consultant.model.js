@@ -1,4 +1,4 @@
-const { db } = require('../config');
+const { db } = require("../config");
 
 module.exports = {
   isAvalaibleConsultant: async (data) => {
@@ -40,15 +40,15 @@ module.exports = {
     SELECT consultants.consultantId, users.fullname,users.photo, users.roleId,users.address, users.city, users.phone,consultants.experience,consultants.isActive 
     FROM consultants LEFT JOIN users ON consultants.userId = users.userId
 
-    ${roleid || city || name ? 'WHERE ' : ''}
+    ${roleid || city || name ? "WHERE " : ""}
 
-    ${roleid ? `users.roleId = ${roleid}` : ''}
-    ${roleid && city ? 'AND' : ''}
+    ${roleid ? `users.roleId = ${roleid}` : ""}
+    ${roleid && city ? "AND" : ""}
 
-    ${city ? `users.city = '${city}'` : ''}
-    ${(roleid || city) && name ? 'AND' : ''}
+    ${city ? `users.city = '${city}'` : ""}
+    ${(roleid || city) && name ? "AND" : ""}
     
-    ${name ? `users.fullname LIKE '%${name}%'` : ''}
+    ${name ? `users.fullname LIKE '%${name}%'` : ""}
     
     AND consultants.isActive = true
     `;
@@ -66,7 +66,7 @@ module.exports = {
   getConsultantDetail: (data) => {
     const { consultantId } = data;
 
-    const query = `SELECT consultants.consultantId, users.fullname,users.photo, users.roleId,users.address, users.city, users.phone,consultants.experience,consultants.isActive 
+    const query = `SELECT consultants.consultantId,users.userId,users.fullname,users.photo, users.roleId,users.address, users.city, users.phone,consultants.experience,consultants.isActive 
     FROM consultants LEFT JOIN users ON consultants.userId = users.userId WHERE consultants.consultantId = '${consultantId}'`;
 
     return new Promise((resolve, reject) => {

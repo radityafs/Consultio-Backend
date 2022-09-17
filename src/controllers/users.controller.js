@@ -1,11 +1,11 @@
-const fs = require('fs');
-const { success, failed } = require('../helpers/response');
+const fs = require("fs");
+const { success, failed } = require("../helpers/response");
 const {
   updateProfile,
   getProfile,
   updatePhotoProfile
-} = require('../models/users.model');
-const role = require('../utils/role.users');
+} = require("../models/users.model");
+const role = require("../utils/role.users");
 
 module.exports = {
   updateProfile: async (req, res) => {
@@ -22,11 +22,11 @@ module.exports = {
 
       if (result.affectedRows > 0) {
         return success(res, 200, {
-          message: 'Successfully updated profile'
+          message: "Successfully updated profile"
         });
       }
 
-      return failed(res, 400, 'Failed to update profile');
+      return failed(res, 400, "Failed to update profile");
     } catch (error) {
       return failed(res, 500, {
         message: error.message
@@ -36,14 +36,14 @@ module.exports = {
 
   getProfile: async (req, res) => {
     try {
-      const { userId } = req.userData;
+      const { id: userId } = req.params;
 
       const result = await getProfile({ userId });
 
       if (result.length > 0) {
         delete result[0].password;
         delete result[0].token;
-        result[0].role = role(result[0].role);
+        result[0].role = role(result[0].roleId);
 
         delete result[0].roleId;
 
@@ -52,7 +52,7 @@ module.exports = {
         });
       }
 
-      return failed(res, 400, 'Failed to get profile');
+      return failed(res, 400, "Failed to get profile");
     } catch (error) {
       return failed(res, 500, {
         message: error.message
@@ -64,7 +64,7 @@ module.exports = {
       const profile = await getProfile({ userId: req.userData.userId });
       const { photo } = profile[0];
 
-      if (photo !== 'default.png') {
+      if (photo !== "default.png") {
         fs.unlinkSync(`./public/${photo}`);
       }
 
@@ -75,11 +75,11 @@ module.exports = {
 
       if (result.affectedRows > 0) {
         return success(res, 200, {
-          message: 'Profile photo updated'
+          message: "Profile photo updated"
         });
       }
 
-      return failed(res, 400, 'failed to update profile photo');
+      return failed(res, 400, "failed to update profile photo");
     } catch (error) {
       return failed(res, 500, {
         message: error.message

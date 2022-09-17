@@ -6,15 +6,15 @@ const {
   getBookingDetailbyId,
   countBooking,
   getBookingList
-} = require('../models/booking.model');
-const { success, failed } = require('../helpers/response');
+} = require("../models/booking.model");
+const { success, failed } = require("../helpers/response");
 
 const {
   isAvalaibleConsultant,
   getConsultantByUserId
-} = require('../models/consultant.model');
-const roleType = require('../utils/role.users');
-const status = require('../utils/status.booking');
+} = require("../models/consultant.model");
+const roleType = require("../utils/role.users");
+const status = require("../utils/status.booking");
 
 module.exports = {
   createBooking: async (req, res) => {
@@ -24,12 +24,12 @@ module.exports = {
 
       const isAvailConsultant = await isAvalaibleConsultant({ consultantId });
 
-      if (!isAvailConsultant) {
-        return failed(res, 404, 'Consultant not found');
+      if (isAvailConsultant.length === 0) {
+        return failed(res, 404, "Consultant not found");
       }
 
       if (isAvailConsultant[0].isActive === 0) {
-        return failed(res, 400, 'Consultant is not active');
+        return failed(res, 400, "Consultant is not active");
       }
 
       const result = await createBooking({
@@ -40,13 +40,14 @@ module.exports = {
         type: isAvailConsultant[0].type
       });
 
-      if (result.affectedRows > 0) {
+      if (result?.result.affectedRows > 0) {
         return success(res, 200, {
-          message: 'Successfully create booking'
+          message: "Successfully create booking",
+          data: result.data
         });
       }
 
-      return failed(res, 400, 'Failed to create booking');
+      return failed(res, 400, "Failed to create booking");
     } catch (e) {
       return failed(res, 500, {
         message: e.message
@@ -63,11 +64,11 @@ module.exports = {
       const isAvaialableBooking = await getBookingId({ bookingId: id });
 
       if (!isAvaialableBooking) {
-        return failed(res, 404, 'Booking not found');
+        return failed(res, 404, "Booking not found");
       }
 
       if (isAvaialableBooking[0].isActive === 0) {
-        return failed(res, 400, 'Booking already ended');
+        return failed(res, 400, "Booking already ended");
       }
 
       const getConsultant = await getConsultantByUserId({ userId });
@@ -82,11 +83,11 @@ module.exports = {
 
       if (result.affectedRows > 0) {
         return success(res, 200, {
-          message: 'Successfully end booking'
+          message: "Successfully end booking"
         });
       }
 
-      return failed(res, 400, 'Failed to end booking');
+      return failed(res, 400, "Failed to end booking");
     } catch (error) {
       return failed(res, 500, {
         message: error.message
@@ -103,21 +104,21 @@ module.exports = {
       const isAvaialableBooking = await getBookingId({ bookingId: id });
 
       if (!isAvaialableBooking) {
-        return failed(res, 404, 'Booking not found');
+        return failed(res, 404, "Booking not found");
       }
 
       if (isAvaialableBooking[0].isActive === 1) {
         return failed(
           res,
           400,
-          'Booking not ended now, please wait booking ended'
+          "Booking not ended now, please wait booking ended"
         );
       }
       if (
         isAvaialableBooking[0].reviewStar !== null ||
         isAvaialableBooking[0].reviewContent !== null
       ) {
-        return failed(res, 400, 'Booking already reviewed');
+        return failed(res, 400, "Booking already reviewed");
       }
 
       const result = await updateBookingReview({
@@ -129,11 +130,11 @@ module.exports = {
 
       if (result.affectedRows > 0) {
         return success(res, 200, {
-          message: 'Successfully update review'
+          message: "Successfully update review"
         });
       }
 
-      return failed(res, 400, 'Failed to update review');
+      return failed(res, 400, "Failed to update review");
     } catch (error) {
       return failed(res, 500, {
         message: error.message
@@ -149,7 +150,7 @@ module.exports = {
       let result = await getBookingDetailbyId({ bookingId: id, userId });
 
       if (!result) {
-        return failed(res, 404, 'Booking not found');
+        return failed(res, 404, "Booking not found");
       }
 
       result[0].type = roleType(result[0].type);
@@ -175,7 +176,7 @@ module.exports = {
       isActive === undefined ? (isActive = undefined) : (isActive = isActive);
 
       const offset = (page - 1) * limit;
-      if (role !== 'USER') {
+      if (role !== "USER") {
         const getConsultant = await getConsultantByUserId({ userId });
         userId = getConsultant[0].consultantId;
       }
@@ -194,7 +195,7 @@ module.exports = {
       });
 
       if (!result) {
-        return failed(res, 404, 'Booking not found');
+        return failed(res, 404, "Booking not found");
       }
 
       result = await Promise.all(
@@ -206,7 +207,7 @@ module.exports = {
       );
 
       return success(res, 200, {
-        message: 'Successfully get post',
+        message: "Successfully get post",
         data: result,
         currentPage: page,
         totalPage

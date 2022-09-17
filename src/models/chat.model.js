@@ -1,10 +1,10 @@
-const { db } = require('../config');
+const { db } = require("../config");
 
 module.exports = {
   store: (data) => {
-    const { sender, receiver, message } = data;
+    const { chatId, sender, receiver, message } = data;
 
-    const query = `INSERT INTO chats (sender, receiver, message) VALUES ('${sender}', '${receiver}', '${message}')`;
+    const query = `INSERT INTO chats (chatId, sender, receiver, message) VALUES ('${chatId}','${sender}', '${receiver}', '${message}')`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
@@ -17,7 +17,7 @@ module.exports = {
     });
   },
   list: (data) => {
-    const { sender, receiver } = data;
+    const { chatId } = data;
 
     const query = `
         SELECT 
@@ -29,7 +29,7 @@ module.exports = {
         message
 
         FROM chats
-        WHERE (sender = '${sender}' AND receiver = '${receiver}') OR (sender = '${receiver}' AND receiver = '${sender}')
+        WHERE chatId = '${chatId}'
         ORDER BY createdAt ASC
         `;
     return new Promise((resolve, reject) => {
