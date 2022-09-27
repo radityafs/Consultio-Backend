@@ -41,5 +41,33 @@ module.exports = {
         }
       });
     });
+  },
+  history: (data) => {
+    const { userId, consultantId, status } = data;
+
+    const query = `
+    SELECT 
+
+    chatId,
+    sender,
+    receiver,
+    (SELECT fullname FROM users WHERE users.userId = chats.sender) AS senderName,
+    (SELECT fullname FROM users WHERE users.userId = chats.receiver) AS receiverName,
+    message
+    FROM chats
+
+    WHERE chatId = '(SELECT chatId FROM bookings WHERE userId = '${userId} OR consultantId = '${consultantId}' AND isActive = ${status}) AS chatId' 
+    LIMIT 1 BY chatId
+    ORDER BY createdAt ASC
+    `;
+
+    return new Promise((resolve, reject) => {
+      db.query(query, (error, result) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(result);
+      });
+    });
   }
 };

@@ -1,6 +1,6 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
-const { db } = require('../config');
+const { db } = require("../config");
 
 module.exports = {
   registerUser: (data) => {
@@ -13,10 +13,10 @@ module.exports = {
       userId: id,
       fullname,
       email,
-      photo: 'default.png',
-      address: '',
-      city: '',
-      phone: '',
+      photo: "default.png",
+      address: "",
+      city: "",
+      phone: "",
       roleId: 2,
       isVerified: false,
       isPrivate: false,
@@ -48,10 +48,10 @@ module.exports = {
       consultantId,
       fullname,
       email,
-      photo: 'default.png',
-      address: '',
-      city: '',
-      phone: '',
+      photo: "default.png",
+      address: "",
+      city: "",
+      phone: "",
       roleId,
       isActive: true
     };
@@ -80,7 +80,8 @@ module.exports = {
     const { email } = data;
 
     const query = `
-      SELECT userId, fullname, email,password,photo, address, city, phone,roleId, isVerified, isPrivate 
+      SELECT userId, fullname, email,password,photo, address, city, phone, roleId, isVerified, isPrivate, 
+      (SELECT consultantId FROM consultants WHERE userId = users.userId) AS consultantId
       FROM users WHERE email = '${email}';`;
 
     return new Promise((resolve, reject) => {

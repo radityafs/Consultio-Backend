@@ -3,7 +3,6 @@ module.exports = {
     await queryInterface.createTable("chats", {
       chatId: {
         allowNull: false,
-        primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
