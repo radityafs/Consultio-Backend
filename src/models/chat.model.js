@@ -1,10 +1,14 @@
+const { v4: uuidv4 } = require("uuid");
+
 const { db } = require("../config");
 
 module.exports = {
   store: (data) => {
+    const messageId = uuidv4();
+
     const { chatId, sender, receiver, message } = data;
 
-    const query = `INSERT INTO chats (chatId, sender, receiver, message) VALUES ('${chatId}','${sender}', '${receiver}', '${message}')`;
+    const query = `INSERT INTO chats (messageId, chatId, sender, receiver, message) VALUES ('${messageId}', '${chatId}','${sender}', '${receiver}', '${message}')`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
@@ -46,19 +50,19 @@ module.exports = {
     const { userId, consultantId, status } = data;
 
     const query = `
-    SELECT 
-
-    chatId,
-    sender,
-    receiver,
+    SELECT bookings.chatId,
+    chats.sender,
+    chats.receiver,
     (SELECT fullname FROM users WHERE users.userId = chats.sender) AS senderName,
     (SELECT fullname FROM users WHERE users.userId = chats.receiver) AS receiverName,
-    message
-    FROM chats
-
-    WHERE chatId = '(SELECT chatId FROM bookings WHERE userId = '${userId} OR consultantId = '${consultantId}' AND isActive = ${status}) AS chatId' 
-    LIMIT 1 BY chatId
-    ORDER BY createdAt ASC
+    (SELECT photo FROM users WHERE users.userId = chats.receiver) AS receiverPhoto,
+    (SELECT photo FROM users WHERE users.userId = chats.sender) AS senderPhoto,
+    message 
+    FROM bookings 
+    LEFT JOIN chats ON chats.chatId = bookings.chatId 
+    WHERE (bookings.userId = '${userId}' OR bookings.consultantId = '${consultantId}')
+    AND bookings.isActive = ${status}
+    ORDER BY chats.createdAt;
     `;
 
     return new Promise((resolve, reject) => {

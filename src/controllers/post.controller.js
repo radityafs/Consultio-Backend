@@ -23,7 +23,7 @@ module.exports = {
       const totalData = parseInt(await getCountAllPost({ user, search }));
       const totalPage = Math.ceil(totalData / limit);
 
-      if (page > totalPage) {
+      if (page > totalPage + 1) {
         return failed(res, 400, "Page not found");
       }
 
@@ -37,7 +37,7 @@ module.exports = {
           totalPage
         });
       } else {
-        return failed(res, 404, "Post not found");
+        return failed(res, 404, "Post not found", []);
       }
     } catch (error) {
       return failed(res, 500, {

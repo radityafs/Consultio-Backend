@@ -21,7 +21,7 @@ module.exports = (io, socket) => {
         io.to(receiver).emit("message-log", { ...data, message: "failed" });
       }
     } catch (error) {
-      io.to(receiver).emit("error-log", { error: error.message });
+      socket.emit("error-log", { error: error.message });
     }
   });
 
@@ -35,7 +35,7 @@ module.exports = (io, socket) => {
         io.to(userId).emit("message-history", { ...data, message: "failed" });
       }
     } catch (error) {
-      io.to(userId).emit("error-log", { error: error.message });
+      socket.emit("error-log", { error: error.message });
     }
   });
 
@@ -49,7 +49,7 @@ module.exports = (io, socket) => {
         io.to(userId).emit("message-detail", { ...data, message: "failed" });
       }
     } catch (error) {
-      io.to(userId).emit("error-log", { error: error.message });
+      socket.emit("error-log", { error: error.message });
     }
   });
 };
