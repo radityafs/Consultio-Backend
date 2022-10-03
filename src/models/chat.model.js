@@ -62,8 +62,8 @@ module.exports = {
     LEFT JOIN chats ON chats.chatId = bookings.chatId 
     WHERE (bookings.userId = '${userId}' OR bookings.consultantId = '${consultantId}')
     AND bookings.isActive = ${status}
-    ORDER BY chats.createdAt;
-    `;
+    ORDER BY chats.createdAt DESC
+    LIMIT 1 BY chat.chatId`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {

@@ -112,11 +112,8 @@ module.exports = {
     WHERE userId = '${userId}'
 
     ${type || isActive ? "AND" : ""}
-
     ${type ? `type = '${type}'` : ""}
-
     ${type && isActive ? "AND" : ""}
-    
     ${isActive ? `isActive = ${isActive}` : ""}`;
 
     return new Promise((resolve, reject) => {
@@ -152,7 +149,7 @@ module.exports = {
 
     FROM bookings
 
-    WHERE userId = '${userId}'
+    WHERE userId = '${userId}' OR consultantId = (SELECT consultantId FROM consultants WHERE userId = '${userId}')
 
     ${type || isActive ? "AND" : ""}
     ${type ? `type = '${type}'` : ""}

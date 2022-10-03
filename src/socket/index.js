@@ -42,7 +42,7 @@ module.exports = (io, socket) => {
   socket.on("chat-detail", async (data) => {
     try {
       const { userId, chatId } = data;
-      const listChats = await list(chatId);
+      const listChats = await list({ chatId });
       if (listChats) {
         io.to(userId).emit("message-detail", listChats);
       } else {
