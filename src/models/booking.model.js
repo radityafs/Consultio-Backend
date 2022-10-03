@@ -22,10 +22,11 @@ module.exports = {
     const { userId, consultantId, consultantUserId, problem, type } = data;
 
     const bookingId = uuidv4();
+    const messageId = uuidv4();
     const chatId = uuidv4();
 
     const query = `INSERT INTO bookings (bookingId, userId, consultantId, problem, type, isActive, chatId) VALUES ('${bookingId}', '${userId}', '${consultantId}', '${problem}', '${type}', 1, '${chatId}')`;
-    const query2 = `INSERT INTO chats (chatId, sender, receiver, message) VALUES ('${chatId}', '${userId}', '${consultantUserId}', '${problem}')`;
+    const query2 = `INSERT INTO chats (messageId, chatId, sender, receiver, message) VALUES ('${messageId}','${chatId}', '${userId}', '${consultantUserId}', '${problem}')`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error) => {
