@@ -100,6 +100,7 @@ module.exports = {
       const { id } = req.params;
       const { userId } = req.userData;
       const { rating, review } = req.body;
+      console.log(req.body);
 
       const isAvaialableBooking = await getBookingId({ bookingId: id });
 
@@ -168,7 +169,7 @@ module.exports = {
     try {
       let { page, limit, type, isActive } = req.query;
 
-      const { userId, role } = req.userData;
+      let { userId, role } = req.userData;
 
       page === undefined ? (page = 1) : (page = parseInt(page));
       limit === undefined ? (limit = 10) : (limit = parseInt(limit));
@@ -178,20 +179,16 @@ module.exports = {
       const offset = (page - 1) * limit;
       if (role !== "USER") {
         const getConsultant = await getConsultantByUserId({ userId });
-        userId = getConsultant[0].consultantId;
+	userId = getConsultant[0].consultantId;
       }
 
-      const totalData = parseInt(
-        await countBooking({ userId, type, isActive })
-      );
-      const totalPage = Math.ceil(totalData / limit);
+     // const totalData = parseInt(
+      //  await countBooking({ userId, type, isActive })
+     // );
+     // const totalPage = Math.ceil(totalData / limit);
 
       let result = await getBookingList({
-        userId,
-        type,
-        isActive,
-        offset,
-        limit
+        userId
       });
 
       if (!result) {
@@ -208,9 +205,7 @@ module.exports = {
 
       return success(res, 200, {
         message: "Successfully get post",
-        data: result,
-        currentPage: page,
-        totalPage
+        data: result
       });
     } catch (error) {
       return failed(res, 500, {

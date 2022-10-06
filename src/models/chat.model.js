@@ -51,19 +51,19 @@ module.exports = {
 
     const query = `
     SELECT bookings.chatId,
+    bookings.bookingId,
     chats.sender,
     chats.receiver,
     (SELECT fullname FROM users WHERE users.userId = chats.sender) AS senderName,
     (SELECT fullname FROM users WHERE users.userId = chats.receiver) AS receiverName,
     (SELECT photo FROM users WHERE users.userId = chats.receiver) AS receiverPhoto,
     (SELECT photo FROM users WHERE users.userId = chats.sender) AS senderPhoto,
-    message 
+    message,
+    chats.createdAt as createdAt 
     FROM bookings 
     LEFT JOIN chats ON chats.chatId = bookings.chatId 
     WHERE (bookings.userId = '${userId}' OR bookings.consultantId = '${consultantId}')
-    AND bookings.isActive = ${status}
-    ORDER BY chats.createdAt DESC
-    LIMIT 1 BY chat.chatId`;
+    AND bookings.isActive = ${status} ORDER BY chats.createdAt ASC`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {

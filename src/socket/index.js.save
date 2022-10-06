@@ -1,15 +1,10 @@
 const { store, history, list } = require("../models/chat.model");
-const moment = require("moment");
-
-function getUniqueListBy(arr, key) {
-  return [...new Map(arr.map((item) => [item[key], item])).values()];
-}
 
 module.exports = (io, socket) => {
   socket.on("ping", (data) => {
     socket.emit("ping-response", data);
   });
-
+error-log
   socket.on("join-room", async (data) => {
     const { userId } = data;
     await socket.join(userId);
@@ -35,13 +30,7 @@ module.exports = (io, socket) => {
       const { status, userId, consultantId } = data;
       const getChatHistory = await history({ userId, consultantId, status });
       if (getChatHistory) {
-        const uniqueChatHistory = getUniqueListBy(getChatHistory, "chatId");
-
-        const sortedArray = uniqueChatHistory.sort(
-          (a, b) => moment(a.createdAt).diff(moment(b.createdAt))
-	);
-
-        io.to(userId).emit("message-history", sortedArray);
+        io.to(userId).emit("message-history", getChatHistory);
       } else {
         io.to(userId).emit("message-history", { ...data, message: "failed" });
       }
@@ -51,16 +40,19 @@ module.exports = (io, socket) => {
   });
 
   socket.on("chat-detail", async (data) => {
-    try {
-      const { userId, chatId } = data;
-      const listChats = await list({ chatId });
-      if (listChats) {
-        io.to(userId).emit("message-detail", listChats);
-      } else {
-        io.to(userId).emit("message-detail", { ...data, message: "failed" });
-      }
-    } catch (error) {
-      socket.emit("error-log", { error: error.message });
-    }
-  });
+console.log("ada yang masuk");	
+socket.emit("error-log",{data}); 
+// try {
+    //  const { userId, chatId } = data;
+   //   const listChats = await list(chatId);
+   //   await socket.emit("error-log", {message:"ada request chat-detail" , data});
+    //  if (listChats) {
+    //    io.to(userId).emit("message-detail", listChats);
+    //  } else {
+   //     io.to(userId).emit("message-detail", { ...data, message: "failed" });
+  //    }
+  //  } catch (error) {
+   //   await socket.emit("error-log", { error: error.message });
+  //  }
+   });
 };

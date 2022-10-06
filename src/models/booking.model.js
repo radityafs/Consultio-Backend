@@ -62,8 +62,8 @@ module.exports = {
 
   updateBookingReview: async (data) => {
     const { userId, bookingId, rating, review } = data;
-
-    const query = `UPDATE bookings SET reviewStar = ${rating}, reviewContent = '${review}', updatedAt = CURRENT_TIMESTAMP WHERE bookingId = '${bookingId}' AND userId = '${userId}';`;
+    console.log(data);
+    const query = `UPDATE bookings SET reviewStar = ${rating}, reviewContent = '${review}' WHERE bookingId = '${bookingId}' AND userId = '${userId}';`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
@@ -83,16 +83,19 @@ module.exports = {
     bookingId, 
     (SELECT users.fullname FROM users WHERE bookings.userId = users.userId) AS customerName,
     (SELECT users.fullname FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantName,
+    (SELECT users.photo FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantPhoto,
+    (SELECT users.city FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantCity,
     type,
     chatId,
     reviewStar AS rating,
     reviewContent AS review,
     solution,
+    problem,
     isActive,
     updatedAt,
     createdAt
     
-    FROM bookings WHERE bookingId = '${bookingId}' AND userId = '${userId}';`;
+    FROM bookings WHERE bookingId = '${bookingId}';`;
 
     return new Promise((resolve, reject) => {
       db.query(query, (error, result) => {
@@ -149,15 +152,8 @@ module.exports = {
 
     FROM bookings
 
-    WHERE userId = '${userId}' OR consultantId = (SELECT consultantId FROM consultants WHERE userId = '${userId}')
-
-    ${type || isActive ? "AND" : ""}
-    ${type ? `type = '${type}'` : ""}
-    ${isActive ? `isActive = ${isActive}` : ""}
-    
+    WHERE userId = '${userId}' OR consultantId = '${userId}'
     ORDER BY createdAt DESC
-    LIMIT ${limit}
-    OFFSET ${offset}
     ;`;
 
     return new Promise((resolve, reject) => {
