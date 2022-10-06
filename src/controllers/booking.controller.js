@@ -167,25 +167,12 @@ module.exports = {
 
   getBooking: async (req, res) => {
     try {
-      let { page, limit, type, isActive } = req.query;
-
       let { userId, role } = req.userData;
 
-      page === undefined ? (page = 1) : (page = parseInt(page));
-      limit === undefined ? (limit = 10) : (limit = parseInt(limit));
-      type === undefined ? (type = undefined) : (type = type);
-      isActive === undefined ? (isActive = undefined) : (isActive = isActive);
-
-      const offset = (page - 1) * limit;
       if (role !== "USER") {
         const getConsultant = await getConsultantByUserId({ userId });
-	userId = getConsultant[0].consultantId;
+        userId = getConsultant[0].consultantId;
       }
-
-     // const totalData = parseInt(
-      //  await countBooking({ userId, type, isActive })
-     // );
-     // const totalPage = Math.ceil(totalData / limit);
 
       let result = await getBookingList({
         userId

@@ -46,7 +46,7 @@ module.exports = {
         const token = createToken(payload);
         const refreshToken = createRefreshToken(payload);
 
-        // await sendMailVerification(user.email, result.data.token);
+        await sendMailVerification(user.email, result.data.token);
 
         return success(res, 201, {
           token,
@@ -93,7 +93,8 @@ module.exports = {
           city: result.data.city,
           phone: result.data.phone,
           isVerified: result.data.isVerified,
-          isPrivate: result.data.isPrivate
+          isPrivate: result.data.isPrivate,
+          consultantId: result.data.consultantId
         };
 
         const token = createToken(payload);
@@ -139,7 +140,8 @@ module.exports = {
             city: result[0].city,
             phone: result[0].phone,
             isVerified: result[0].isVerified,
-            isPrivate: result[0].isPrivate
+            isPrivate: result[0].isPrivate,
+            consultantId: result[0].consultantId
           };
           const token = createToken(payload);
           const refreshToken = createRefreshToken(payload);

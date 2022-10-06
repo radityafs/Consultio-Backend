@@ -53,7 +53,8 @@ module.exports = {
       city: "",
       phone: "",
       roleId,
-      isActive: true
+      isActive: true,
+      consultantId: consultantId
     };
 
     const query = `INSERT INTO users (userId, fullname,email, password, token, photo, roleId,isVerified) VALUES ('${id}', '${fullname}', '${email}', '${password}', '${token}', 'default.png', ${roleId},true)`;
