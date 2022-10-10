@@ -82,6 +82,8 @@ module.exports = {
 
     bookingId, 
     (SELECT users.fullname FROM users WHERE bookings.userId = users.userId) AS customerName,
+    (SELECT users.photo FROM users WHERE bookings.userId = users.userId) AS customerPhoto,
+    (SELECT users.city FROM users WHERE bookings.userId = users.userId) AS customerCity,
     (SELECT users.fullname FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantName,
     (SELECT users.photo FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantPhoto,
     (SELECT users.city FROM users WHERE userId = (SELECT consultants.userId FROM consultants WHERE bookings.consultantId = consultants.consultantId) ) AS consultantCity,

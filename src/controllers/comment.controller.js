@@ -4,6 +4,7 @@ const {
   getCommentByPostId,
   postComment
 } = require("../models/comment.model");
+const role = require("../utils/role.users");
 
 const { isPostAvailable } = require("../models/post.model");
 
@@ -32,7 +33,12 @@ module.exports = {
       }
 
       const result = await getCommentByPostId({ offset, limit, postId: id });
-
+      const resultMapping = result.map((item) => {
+	return {
+	...item,
+	item.roleId : role(item.roleId)
+}
+	})
       if (result.length > 0) {
         return success(res, 200, {
           message: "Successfully get Comment",
